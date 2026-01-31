@@ -1,0 +1,78 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
+
+    <cache alias="mandrCache">
+        <expiry>
+            <ttl unit="days">1</ttl> <!-- Cache expires in 10 minutes -->
+        </expiry>
+        <resources>
+            <heap unit="entries">200</heap> <!-- Keep up to 500 entries in memory -->
+        </resources>
+    </cache>
+
+    <cache alias="userCache">
+        <expiry>
+            <ttl unit="days">1</ttl> <!-- Cache expires in 10 minutes -->
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap> <!-- Keep up to 500 entries in memory -->
+        </resources>
+    </cache>
+
+
+    <cache alias="yojanaCache">
+        <expiry>
+            <ttl unit="days">1</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">200</heap>
+        </resources>
+    </cache>
+
+    <cache alias="menuCache">
+        <expiry>
+            <ttl unit="days">1</ttl> <!-- Cache expires after 1 day -->
+        </expiry>
+        <resources>
+            <heap unit="entries">10</heap> <!-- Up to 100 role menus cached -->
+        </resources>
+    </cache>
+
+    <cache alias="orderByInvoiceIdCache">
+        <expiry>
+            <ttl unit="minutes">30</ttl> <!-- Adjust TTL as needed -->
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap> <!-- Adjust capacity -->
+        </resources>
+    </cache>
+
+    <cache alias="userDetails">
+        <key-type>java.lang.String</key-type>
+        <value-type>com.revnext.configuration.security.ApplicationUser</value-type>
+        <expiry>
+            <ttl unit="days">1</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">30</heap>
+        </resources>
+    </cache>
+
+    <cache alias="availableStocks">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <!-- Entries expire 1 hour after creation -->
+            <ttl unit="days">1</ttl>
+        </expiry>
+        <resources>
+            <!-- Up to 500 entries in Java heap -->
+            <heap unit="entries">500</heap>
+        </resources>
+    </cache>
+
+
+
+</config>

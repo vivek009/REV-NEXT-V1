@@ -1,0 +1,286 @@
+-- Insert roles into user_role table
+INSERT INTO user_role (id, name) VALUES
+  (UUID_TO_BIN(UUID()), 'CE'),
+  (UUID_TO_BIN(UUID()), 'SE'),
+  (UUID_TO_BIN(UUID()), 'WM'),
+  (UUID_TO_BIN(UUID()), 'AE'),
+  (UUID_TO_BIN(UUID()), 'JE');
+
+-- Insert resources into resource table
+INSERT INTO resource (id, name, method, url, client_url) VALUES
+  (UUID_TO_BIN(UUID()), 'User Management', 'GET', '/api/users', '/users'),
+  (UUID_TO_BIN(UUID()), 'Role Management', 'POST', '/api/roles', '/roles'),
+  (UUID_TO_BIN(UUID()), 'Resource Access', 'PUT', '/api/resources', '/resources');
+
+-- Insert users into user table
+INSERT INTO user (
+    user_id, created_at, created_by, updated_at, updated_by,
+    user_name, password, mobile_number, email, status, refresh_token,
+    workshop, profile_picture_url
+) VALUES (
+    UUID_TO_BIN(UUID()),  -- user_id (converted to BINARY(16))
+    NOW(6),               -- created_at (current timestamp with microseconds)
+    UUID_TO_BIN(UUID()),  -- created_by (replace with actual creator ID)
+    NOW(6),               -- updated_at (current timestamp with microseconds)
+    UUID_TO_BIN(UUID()),  -- updated_by (replace with actual updater ID)
+    'pawan31031',         -- user_name
+    'Bina_31031',         -- password (consider hashing it)
+    '9725005359',         -- mobile_number
+    'pawan31031@gmail.com', -- email
+    b'1',                 -- status (b'1' for TRUE in BIT(1) column)
+    'refreshToken1',      -- refresh_token (must be unique)
+    'TEST Workshop',      -- workshop
+    'https://example.com/admin.jpg' -- profile_picture_url
+);
+
+
+-- Insert user roles into user_roles junction table (assuming role UUIDs are known)
+-- Step 2: Retrieve the user_id of "pawan31031"
+SET @user_id = (SELECT user_id FROM user WHERE user_name = 'pawan31031' LIMIT 1);
+
+-- Step 3: Retrieve the role_id of "WM" (Workshop Manager)
+SET @role_id = (SELECT id FROM user_role WHERE name = 'WM' LIMIT 1);
+
+-- Step 4: Insert the user-role mapping into the user_roles table
+INSERT INTO user_roles (user_id, role_id) VALUES
+  (@user_id, @role_id);
+
+
+-- Insert role resources into role_resources junction table (assuming resource and role UUIDs are known)
+INSERT INTO role_resources (role_id, resource_id) VALUES
+  ('<role_id_CE>', '<resource_id_1>'),
+  ('<role_id_WM>', '<resource_id_2>'),
+  ('<role_id_AE>', '<resource_id_3>');
+
+  -- Main Menus
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'Home', 'Home', '/#/dashboard', 1, 10, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'Inventory', 'Inventory', '/#/dashboard', 1, 20, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'Indent', 'Indent', '/#/dashboard', 1, 30, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'Invoice', 'Invoice', '/#/dashboard', 1, 40, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'PaymentMenu', 'Payment', '/#/dashboard', 1, 50, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'Quality', 'Quality', '/#/dashboard', 1, 60, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'ProductionPlanningMenu', 'Production Planning', '/#/dashboard', 1, 70, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'HRA', 'HRA', '/#/dashboard', 1, 80, NULL, 0),
+  (UUID_TO_BIN(UUID()), 'Miscellaneous', 'Miscellaneous', '/#/dashboard', 1, 90, NULL, 0);
+
+  -- Submenus (use same IDs as parents, or query-generated ones)
+  -- You’ll need to capture the parent UUIDs first in an actual system (via app code or temporary variables)
+
+  -- Submenus for Home
+  SET @homeId = (SELECT id FROM menu WHERE name = 'Home');
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'Tubewell', 'Tubewell', '/#/tubewell', 2, 10, @homeId, 0),
+  (UUID_TO_BIN(UUID()), 'M&R', 'M&R', '/#/m_and_r', 2, 20, @homeId, 0),
+  (UUID_TO_BIN(UUID()), 'Yojana', 'Yojana', '/#/yojana', 2, 30, @homeId, 0),
+  (UUID_TO_BIN(UUID()), 'YojnaReport', 'Yojna Report', '/#/yojanaReport', 2, 40, @homeId, 0),
+  (UUID_TO_BIN(UUID()), 'M&RReport', 'M & R Report', '/#/m&rReport', 2, 50, @homeId, 0);
+
+  SET @Inventory = (SELECT id FROM menu WHERE name = 'Inventory');
+  -- Submenus for Inventory
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'InventoryMain', 'Inventory', '/#/inventory', 2, 10, @Inventory, 0),
+  (UUID_TO_BIN(UUID()), 'InventoryReport', 'Report', '/#/inventoryReport', 2, 20, @Inventory, 0),
+  (UUID_TO_BIN(UUID()), 'CalculateInventory', 'Calculate inventory', '/#/calculateInventory', 2, 30, @Inventory, 0);
+
+  SET @Indent = (SELECT id FROM menu WHERE name = 'Indent');
+  -- Submenus for Indent
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'RaiseIndent', 'Raise Indent', '/#/raiseIndent', 2, 10, @Indent, 0),
+  (UUID_TO_BIN(UUID()), 'MyIndent', 'My Indent', '/#/myIndent', 2, 20, @Indent, 0),
+  (UUID_TO_BIN(UUID()), 'QuarterlyIndent', 'Raise Quarterly Indent', '/#/raiseQuarterlyIndent', 2, 40, @Indent, 0),
+  (UUID_TO_BIN(UUID()), 'ProcessIndent', 'Process Indent', '/#/processIndent', 2, 50, @Indent, 0),
+  (UUID_TO_BIN(UUID()), 'ApproveIndent', 'Approve Indent', '/#/approve', 2, 60, @Indent, 0),
+  (UUID_TO_BIN(UUID()), 'DenyIndent', 'Deny Indent', '/#/deny', 2, 70, @Indent, 0);
+
+  SET @Invoice = (SELECT id FROM menu WHERE name = 'Invoice');
+  -- Submenus for Invoice
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'GenerateInvoice', 'Generate Invoice', '/#/generateInvoice', 2, 10, @Invoice, 0),
+  (UUID_TO_BIN(UUID()), 'ApproveInvoice', 'Approve Invoice', '/#/approveInvoice', 2, 20, @Invoice, 0),
+  (UUID_TO_BIN(UUID()), 'ViewGatepass', 'View gate Pass', '/#/viewGatepass', 2, 30, @Invoice, 0),
+  (UUID_TO_BIN(UUID()), 'InvoiceReport', 'Report', '/#/invoiceReport', 2, 40, @Invoice, 0);
+
+  SET @Payment = (SELECT id FROM menu WHERE name = 'PaymentMenu');
+  -- Submenus for Quality
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'Payment', 'Payment', '/#/payment', 2, 10, @Payment, 0),
+  (UUID_TO_BIN(UUID()), 'PaymentReport', 'Payment Report', '/#/paymentReport', 2, 20, @Payment, 0);
+
+
+
+  SET @Quality = (SELECT id FROM menu WHERE name = 'Quality');
+  -- Submenus for Quality
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'RawQuality', 'Raw material quality', '/#/rawMaterialQuality', 2, 10, @Quality, 0),
+  (UUID_TO_BIN(UUID()), 'FinishedQuality', 'Finished goods quality', '/#/finishedGoodsQuality', 2, 20, @Quality, 0),
+  (UUID_TO_BIN(UUID()), 'ProcessQuality', 'In process Quality', '/#/inProcessQuality', 2, 30, @Quality, 0);
+
+
+  SET @ProductionPlanning = (SELECT id FROM menu WHERE name = 'ProductionPlanningMenu');
+  -- Submenus for ProductionPlanning
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'ProductionPlanning', 'Production Planning', '/#/productionPlanning', 2, 10, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'PlanningIndent', 'Indent', '/#/planningIndent', 2, 20, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'ApprovePlanningIndent', 'Approve Indent', '/#/approvePlanningIndent', 2, 30, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'DenyPlanningIndent', 'Deny Indent', '/#/denyPlanningIndent', 2, 40, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'PlanningInvoice', 'Invoice', '/#/planningInvoice', 2, 50, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'ShopInvoice', 'Shop Invoice', '/#/shopInvoice', 2, 60, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'ApproveShopInvoice', 'Shop Invoice', '/#/approveShopInvoice', 2, 70, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'PlanningReport', 'Report', '/#/planningReport', 2, 80, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'ProcurementReport', 'Procurement Report', '/#/procurementReport', 2, 90, @ProductionPlanning, 0),
+  (UUID_TO_BIN(UUID()), 'Procurement', 'Procurement', '/#/procurement', 2, 100, @ProductionPlanning, 0);
+
+  SET @HRA = (SELECT id FROM menu WHERE name = 'HRA');
+  -- Submenus for HRA
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'Leave', 'Leave', '/#/leave', 2, 10, @HRA, 0),
+  (UUID_TO_BIN(UUID()), 'Holiday', 'Holiday', '/#/holiday', 2, 20, @HRA, 0),
+  (UUID_TO_BIN(UUID()), 'AllLeaves', 'View All Leaves', '/#/viewAllLeaves', 2, 30, @HRA, 0);
+
+  SET @Miscellaneous = (SELECT id FROM menu WHERE name = 'Miscellaneous');
+  -- Submenus for Miscellaneous
+  INSERT INTO menu (id, name, title, url, level, menu_order, parent_id, disabled) VALUES
+  (UUID_TO_BIN(UUID()), 'Machine', 'Machine', '/#/machine', 2, 10, @Miscellaneous, 0),
+  (UUID_TO_BIN(UUID()), 'MachineManagement', 'Machine Management', '/#/machineManagement', 2, 20, @Miscellaneous, 0),
+  (UUID_TO_BIN(UUID()), 'Scrap', 'Scrap', '/#/scrap', 2, 30, @Miscellaneous, 0),
+  (UUID_TO_BIN(UUID()), 'Revenue', 'Revenue', '/#/revenue', 2, 40, @Miscellaneous, 0),
+  (UUID_TO_BIN(UUID()), 'DCLWorks', 'DCL Works', '/#/dcl-works', 2, 50, @Miscellaneous, 0),
+  (UUID_TO_BIN(UUID()), 'Auction', 'Auction', '/#/auction', 2, 60, @Miscellaneous, 0);
+
+
+
+-- select statement for getting teh records
+SELECT
+  parent.name AS main_menu,
+  GROUP_CONCAT(child.name ORDER BY child.menu_order SEPARATOR ', ') AS submenu_names
+FROM menu child
+JOIN menu parent ON child.parent_id = parent.id
+WHERE child.level = 2
+GROUP BY parent.name
+ORDER BY parent.menu_order;
+
+select * from menu where name in ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','CalculateInventory','Indent','RaiseIndent','QuarterlyIndent','ApproveIndent','DenyIndent', 'Invoice','GenerateInvoice','ApproveInvoice','ViewGatepass', 'InvoiceReport','Quality','RawQuality','FinishedQuality','ProcessQuality','HRA', 'Leave', 'Holiday','AllLeaves','Miscellaneous','Scrap','Revenue','DCLWorks','Auction','ProductionPlanningMenu','ProductionPlanning','PaymentMenu','Payment')
+-- Associate all menus to ADMIN
+
+-- FOR WM
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id FROM menu m CROSS JOIN user_role r WHERE r.name = 'WM';
+
+
+-- FOR CE
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'CE'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','InvoiceReport','Quality','RawQuality','FinishedQuality','ProcessQuality','Miscellaneous','Scrap','Revenue','DCLWorks','Auction');
+
+-- FOR CETW
+
+  INSERT INTO menu_roles (menu_id, role_id)
+    SELECT m.id, r.id
+    FROM menu m
+    CROSS JOIN user_role r
+    WHERE r.name = 'CETW'
+      AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','InvoiceReport');
+
+-- FOR SE
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'SE'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','InvoiceReport','Quality','RawQuality','FinishedQuality','ProcessQuality','Miscellaneous','Scrap','Revenue','DCLWorks','Auction');
+
+
+-- FOR SETWC
+
+  INSERT INTO menu_roles (menu_id, role_id)
+    SELECT m.id, r.id
+    FROM menu m
+    CROSS JOIN user_role r
+    WHERE r.name = 'SETWC'
+      AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','InvoiceReport');
+
+
+-- FOR EE
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'EE'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','ApproveInvoice','ViewGatepass', 'InvoiceReport','ProductionPlanningMenu','ProductionPlanning','PaymentMenu','Payment');
+
+-- FOR AE
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'AE'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','CalculateInventory','Indent', 'Invoice','GenerateInvoice','ViewGatepass', 'InvoiceReport','HRA', 'Leave', 'Holiday','AllLeaves','ProductionPlanningMenu','ProductionPlanning','ApprovePlanningIndent','DenyPlanningIndent','PlanningInvoice','PlanningReport','ProductionPlanningDetails','Procurement','ApproveShopInvoice','PaymentMenu','Payment');
+
+
+
+-- FOR AES
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'AES'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','CalculateInventory','Indent', 'Invoice','GenerateInvoice','ViewGatepass', 'InvoiceReport','HRA', 'Leave', 'Holiday','AllLeaves','ProductionPlanningMenu','ProductionPlanning','PlanningIndent','ShopInvoice','PaymentMenu','Payment');
+
+
+
+-- FOR AETWD
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'AETWD'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Indent','RaiseIndent','QuarterlyIndent', 'Invoice','GenerateInvoice','ViewGatepass', 'InvoiceReport','ProductionPlanningMenu','ProductionPlanning','PaymentMenu','MyIndent','Payment');
+
+
+
+-- FOR JE
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'JE'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport', 'Indent','RaiseIndent','QuarterlyIndent', 'Invoice','ViewGatepass', 'InvoiceReport','Quality','RawQuality','FinishedQuality','ProcessQuality','ProductionPlanningMenu','ProductionPlanning','PaymentMenu','Payment');
+
+
+
+-- FOR STORE_KEEPER
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'STORE_KEEPER'
+  AND m.name IN ('Home','YojnaReport','M&RReport', 'Inventory','InventoryMain','InventoryReport','Indent','RaiseIndent','QuarterlyIndent', 'Invoice','GenerateInvoice','ViewGatepass', 'InvoiceReport');
+
+
+
+-- FOR CASHIER
+
+INSERT INTO menu_roles (menu_id, role_id)
+SELECT m.id, r.id
+FROM menu m
+CROSS JOIN user_role r
+WHERE r.name = 'CASHIER'
+  AND m.name IN ('Home','Tubewell','M&R','Yojana','YojnaReport','M&RReport','Miscellaneous','Scrap','Revenue','DCLWorks','Auction','ProductionPlanningMenu','ProductionPlanning','PaymentMenu','Payment','PaymentReport');
+
+For delete
+--DELETE FROM menu_roles
+--WHERE role_id IN (
+  --  SELECT id FROM user_role WHERE name = 'EE'
+--);
