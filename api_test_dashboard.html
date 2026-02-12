@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>REV-NEXT API Test Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #94a3b8;
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px 28px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.pass .value {
+            color: #4ade80;
+        }
+
+        .stat-card.fail .value {
+            color: #f87171;
+        }
+
+        .stat-card.total .value {
+            color: #38bdf8;
+        }
+
+        .stat-card.time .value {
+            color: #c084fc;
+            font-size: 24px;
+        }
+
+        .btn-run {
+            display: block;
+            margin: 0 auto 28px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 14px 48px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-run:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .test-group {
+            margin-bottom: 20px;
+        }
+
+        .test-group h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+
+        .test-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .test-row {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 16px;
+            transition: all 0.3s;
+            gap: 12px;
+        }
+
+        .test-row.running {
+            border-color: #6366f1;
+            background: #1e1b4b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.85;
+            }
+        }
+
+        .test-row.pass {
+            border-color: #22c55e33;
+        }
+
+        .test-row.fail {
+            border-color: #ef444433;
+        }
+
+        .test-row.expected {
+            border-color: #eab30833;
+        }
+
+        .method-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            min-width: 54px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .method-badge.GET {
+            background: #166534;
+            color: #4ade80;
+        }
+
+        .method-badge.POST {
+            background: #1e3a5f;
+            color: #38bdf8;
+        }
+
+        .method-badge.PUT {
+            background: #713f12;
+            color: #fbbf24;
+        }
+
+        .method-badge.DELETE {
+            background: #7f1d1d;
+            color: #f87171;
+        }
+
+        .test-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .test-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .test-status.pass {
+            background: #052e16;
+            color: #4ade80;
+        }
+
+        .test-status.fail {
+            background: #450a0a;
+            color: #f87171;
+        }
+
+        .test-status.expected {
+            background: #422006;
+            color: #fbbf24;
+        }
+
+        .test-status.waiting {
+            background: #1e293b;
+            color: #64748b;
+        }
+
+        .test-status.running {
+            background: #312e81;
+            color: #a5b4fc;
+        }
+
+        .test-detail {
+            font-size: 11px;
+            color: #64748b;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .test-time {
+            font-size: 11px;
+            color: #64748b;
+            min-width: 50px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🚀 REV-NEXT API Test Suite</h1>
+        <p>Comprehensive endpoint testing — 23 tests across 8 domains</p>
+    </div>
+    <div class="stats">
+        <div class="stat-card pass">
+            <div class="value" id="pass-count">0</div>
+            <div class="label">Passed</div>
+        </div>
+        <div class="stat-card fail">
+            <div class="value" id="fail-count">0</div>
+            <div class="label">Failed</div>
+        </div>
+        <div class="stat-card total">
+            <div class="value" id="total-count">0</div>
+            <div class="label">Total</div>
+        </div>
+        <div class="stat-card time">
+            <div class="value" id="elapsed-time">0.0s</div>
+            <div class="label">Elapsed</div>
+        </div>
+    </div>
+    <button class="btn-run" id="btn-run" onclick="runTests()">▶ Run All Tests</button>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div id="test-container"></div>
+
+    <script>
+        const TOKEN = 'JWT_TOKEN_PLACEHOLDER'; // Please provide a valid token here
+        const BASE = 'http://localhost:27001';
+        const testDefs = [
+            {
+                group: 'Product Families', tests: [
+                    { name: '/api/product-families', method: 'GET', url: '/api/product-families', auth: true },
+                ]
+            },
+            {
+                group: 'Products', tests: [
+                    { name: '/api/products', method: 'GET', url: '/api/products', auth: true },
+                    { name: '/api/products/{id}', method: 'GET', url: '/api/products/{firstProductId}', auth: true, dynamic: true },
+                    {
+                        name: '/api/products (create)', method: 'POST', url: '/api/products', auth: true,
+                        body: () => ({ name: 'API Test Product ' + Math.floor(Math.random() * 9999), description: 'Created by automated test', familyId: window._firstFamilyId })
+                    },
+                    {
+                        name: '/api/products/{id} (update)', method: 'PUT', url: '/api/products/{createdProductId}', auth: true, dynamic: true,
+                        body: () => ({ name: 'Updated Test Product', description: 'Updated via API test', familyId: window._firstFamilyId })
+                    },
+                    { name: '/api/products/{id} (delete)', method: 'DELETE', url: '/api/products/{createdProductId}', auth: true, dynamic: true },
+                ]
+            },
+            {
+                group: 'Suite Formulas', tests: [
+                    { name: '/api/suite-formulas', method: 'GET', url: '/api/suite-formulas', auth: true },
+                    { name: '/api/suite-formulas/{id}', method: 'GET', url: '/api/suite-formulas/{firstFormulaId}', auth: true, dynamic: true },
+                ]
+            },
+            {
+                group: 'Suites', tests: [
+                    { name: '/api/suites', method: 'GET', url: '/api/suites', auth: true },
+                    { name: '/api/suites/{id}', method: 'GET', url: '/api/suites/{firstSuiteId}', auth: true, dynamic: true },
+                ]
+            },
+            {
+                group: 'Customers', tests: [
+                    { name: '/api/customers', method: 'GET', url: '/api/customers', auth: true },
+                    { name: '/api/customers/{id}', method: 'GET', url: '/api/customers/{firstCustomerId}', auth: true, dynamic: true },
+                    { name: '/api/customers/segments', method: 'GET', url: '/api/customers/segments', auth: true },
+                ]
+            },
+            {
+                group: 'Pricing & Discounts', tests: [
+                    { name: '/api/prices', method: 'GET', url: '/api/prices', auth: true },
+                    { name: '/api/discounts', method: 'GET', url: '/api/discounts', auth: true },
+                ]
+            },
+            {
+                group: 'System', tests: [
+                    { name: '/api/config', method: 'GET', url: '/api/config', auth: true },
+                    { name: '/api/menus', method: 'GET', url: '/api/menus', auth: true },
+                    { name: '/api/user', method: 'GET', url: '/api/user', auth: true },
+                ]
+            },
+            {
+                group: 'Error Handling', tests: [
+                    { name: '/api/products/{bad-id} → 404', method: 'GET', url: '/api/products/00000000-0000-0000-0000-000000000000', auth: true, expected: [404] },
+                    {
+                        name: '/authenticate (bad creds) → 401', method: 'POST', url: '/authenticate', auth: false,
+                        body: () => ({ userName: 'bad', password: 'bad' }), expected: [401]
+                    },
+                    { name: '/api/nonexistent → 404', method: 'GET', url: '/api/nonexistent', auth: true, expected: [404] },
+                ]
+            },
+        ];
+
+        const container = document.getElementById('test-container');
+        let testIndex = 0;
+        const testItems = [];
+        for (const group of testDefs) {
+            const div = document.createElement('div');
+            div.className = 'test-group';
+            div.innerHTML = `<h3>${group.group}</h3><div class="test-list"></div>`;
+            container.appendChild(div);
+            const list = div.querySelector('.test-list');
+            for (const test of group.tests) {
+                const row = document.createElement('div');
+                row.className = 'test-row';
+                row.id = 'test-' + testIndex;
+                row.innerHTML = `
+      <span class="method-badge ${test.method}">${test.method}</span>
+      <span class="test-name">${test.name}</span>
+      <span class="test-detail" id="detail-${testIndex}">—</span>
+      <span class="test-time" id="time-${testIndex}">—</span>
+      <span class="test-status waiting" id="status-${testIndex}">WAIT</span>`;
+                list.appendChild(row);
+                testItems.push({ ...test, idx: testIndex });
+                testIndex++;
+            }
+        }
+        let passCount = 0, failCount = 0, totalRun = 0;
+        const totalTests = testItems.length;
+
+        function resolveUrl(url) {
+            return url.replace('{firstProductId}', window._firstProductId || '')
+                .replace('{firstFamilyId}', window._firstFamilyId || '')
+                .replace('{firstFormulaId}', window._firstFormulaId || '')
+                .replace('{firstSuiteId}', window._firstSuiteId || '')
+                .replace('{firstCustomerId}', window._firstCustomerId || '')
+                .replace('{createdProductId}', window._createdProductId || '');
+        }
+
+        async function runTest(test) {
+            const row = document.getElementById('test-' + test.idx);
+            const status = document.getElementById('status-' + test.idx);
+            const detail = document.getElementById('detail-' + test.idx);
+            const time = document.getElementById('time-' + test.idx);
+            row.className = 'test-row running';
+            status.className = 'test-status running';
+            status.textContent = 'RUN';
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            const url = BASE + resolveUrl(test.url);
+            const headers = { 'Content-Type': 'application/json' };
+            if (test.auth) headers['Authorization'] = 'Bearer ' + TOKEN;
+            const opts = { method: test.method, headers };
+            if (test.body) opts.body = JSON.stringify(test.body());
+
+            const start = performance.now();
+            try {
+                const resp = await fetch(url, opts);
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                time.textContent = elapsed + 's';
+                const code = resp.status;
+                let data = null;
+                try { data = await resp.json(); } catch (e) { }
+
+                if (test.expected && test.expected.includes(code)) {
+                    row.className = 'test-row expected'; status.className = 'test-status expected';
+                    status.textContent = `${code} ✓`; detail.textContent = `Expected ${code}`; passCount++;
+                } else if (code >= 200 && code < 300) {
+                    row.className = 'test-row pass'; status.className = 'test-status pass';
+                    status.textContent = `${code} ✓`;
+                    if (Array.isArray(data)) {
+                        detail.textContent = `${data.length} items`;
+                        if (data.length > 0) {
+                            if (test.url === '/api/products') window._firstProductId = data[0].id;
+                            if (test.url === '/api/product-families') window._firstFamilyId = data[0].id;
+                            if (test.url === '/api/suite-formulas') window._firstFormulaId = data[0].id;
+                            if (test.url === '/api/suites') window._firstSuiteId = data[0].id;
+                            if (test.url === '/api/customers') window._firstCustomerId = data[0].id;
+                        }
+                    } else if (data && data.id) {
+                        detail.textContent = data.name || data.id.substring(0, 8);
+                        if (test.name.includes('create')) window._createdProductId = data.id;
+                    } else { detail.textContent = 'OK'; }
+                    passCount++;
+                } else {
+                    row.className = 'test-row fail'; status.className = 'test-status fail';
+                    status.textContent = `${code} ✗`; detail.textContent = data?.message || 'Failed'; failCount++;
+                }
+            } catch (err) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                time.textContent = elapsed + 's';
+                row.className = 'test-row fail'; status.className = 'test-status fail';
+                status.textContent = 'ERR'; detail.textContent = err.message; failCount++;
+            }
+            totalRun++;
+            document.getElementById('pass-count').textContent = passCount;
+            document.getElementById('fail-count').textContent = failCount;
+            document.getElementById('total-count').textContent = totalRun + '/' + totalTests;
+            document.getElementById('progress-bar').style.width = ((totalRun / totalTests) * 100) + '%';
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('btn-run');
+            btn.disabled = true; btn.textContent = '⏳ Running...';
+            passCount = 0; failCount = 0; totalRun = 0;
+            const startTime = performance.now();
+            const timer = setInterval(() => {
+                document.getElementById('elapsed-time').textContent = ((performance.now() - startTime) / 1000).toFixed(1) + 's';
+            }, 100);
+            for (const test of testItems) {
+                await runTest(test);
+                await new Promise(r => setTimeout(r, 500));
+            }
+            clearInterval(timer);
+            document.getElementById('elapsed-time').textContent = ((performance.now() - startTime) / 1000).toFixed(1) + 's';
+            btn.textContent = `✅ Complete — ${passCount}/${totalTests} Passed`;
+        }
+
+        // Auto-run after 2 seconds
+        setTimeout(() => { runTests(); }, 2000);
+    </script>
+</body>
+
+</html>

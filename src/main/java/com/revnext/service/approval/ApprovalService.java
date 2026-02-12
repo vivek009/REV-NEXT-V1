@@ -4,13 +4,16 @@ import com.revnext.domain.approval.Approvable;
 import com.revnext.domain.approval.ApprovalRequest;
 import com.revnext.domain.approval.ApprovalStatus;
 import com.revnext.domain.approval.ApprovalWorkflowConfig;
+import com.revnext.domain.approval.EntityStatus;
 import com.revnext.repository.approval.ApprovalRequestRepository;
 import com.revnext.repository.approval.ApprovalWorkflowConfigRepository;
+import com.revnext.repository.approval.EntityStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +24,7 @@ public class ApprovalService {
 
     private final ApprovalRequestRepository requestRepository;
     private final ApprovalWorkflowConfigRepository configRepository;
+    private final EntityStatusRepository entityStatusRepository;
     private final List<ApprovalActionHandler> handlers;
 
     @Transactional
@@ -39,8 +43,20 @@ public class ApprovalService {
                 .requestedBy(requester)
                 .build();
 
-        entity.setApprovalStatus(ApprovalStatus.PENDING_APPROVAL);
+        updateEntityStatus(entity.getEntityId(), entity.getEntityType(), ApprovalStatus.PENDING_APPROVAL);
         return requestRepository.save(request);
+    }
+
+    private void updateEntityStatus(UUID entityId, String entityType, ApprovalStatus status) {
+        EntityStatus entityStatus = entityStatusRepository.findByEntityIdAndEntityType(entityId, entityType)
+                .orElse(EntityStatus.builder()
+                        .entityId(entityId)
+                        .entityType(entityType)
+                        .build());
+
+        entityStatus.setStatus(status);
+        entityStatus.setLastUpdated(Instant.now());
+        entityStatusRepository.save(entityStatus);
     }
 
     @Transactional
@@ -55,6 +71,7 @@ public class ApprovalService {
             if (request.getCurrentLevel() >= config.getTotalLevels()) {
                 request.setStatus(ApprovalStatus.APPROVED);
                 log.info("Final approval received for {} with ID {}", request.getEntityType(), request.getEntityId());
+                updateEntityStatus(request.getEntityId(), request.getEntityType(), ApprovalStatus.APPROVED);
                 notifyHandlers(request.getEntityId(), request.getEntityType(), ApprovalStatus.APPROVED);
             } else {
                 request.setCurrentLevel(request.getCurrentLevel() + 1);
@@ -64,6 +81,7 @@ public class ApprovalService {
         } else {
             request.setStatus(ApprovalStatus.REJECTED);
             log.warn("Rejection received for {} with ID {}", request.getEntityType(), request.getEntityId());
+            updateEntityStatus(request.getEntityId(), request.getEntityType(), ApprovalStatus.REJECTED);
             notifyHandlers(request.getEntityId(), request.getEntityType(), ApprovalStatus.REJECTED);
         }
 

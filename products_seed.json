@@ -1,0 +1,257 @@
+[
+    {
+        "name": "Ergonomic Mesh Chair",
+        "description": "High-back black mesh chair with lumbar support.",
+        "sku": "OFF-CHR-01",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Color": "Black",
+            "Material": "Mesh/Plastic",
+            "Features": "Adjustable Armrests, Lumbar Support"
+        },
+        "imageNames": [
+            "ergonomic_chair_mesh_1770273242812.png"
+        ]
+    },
+    {
+        "name": "Modern Oak Standing Desk",
+        "description": "Electric height-adjustable desk with solid oak top.",
+        "sku": "OFF-DSK-02",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "Solid Oak",
+            "Max Height": "120cm",
+            "Min Height": "70cm"
+        },
+        "imageNames": [
+            "standing_desk_oak_1770273183495.png"
+        ]
+    },
+    {
+        "name": "Steel Filing Cabinet",
+        "description": "3-drawer heavy-duty steel cabinet for office storage.",
+        "sku": "OFF-CAB-03",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "Cold-rolled Steel",
+            "Drawers": "3",
+            "Lock": "Yes"
+        },
+        "imageNames": [
+            "filing_cabinet_steel_1770273200037.png"
+        ]
+    },
+    {
+        "name": "Bamboo Monitor Stand",
+        "description": "Eco-friendly bamboo stand with storage slots.",
+        "sku": "OFF-MON-04",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "Bamboo",
+            "Weight Capacity": "20kg"
+        },
+        "imageNames": [
+            "monitor_stand_bamboo_1770273220034.png"
+        ]
+    },
+    {
+        "name": "Executive Leather Chair",
+        "description": "Premium brown leather executive chair with padding.",
+        "sku": "OFF-CHR-05",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "Top-grain Leather",
+            "Color": "Brown",
+            "Style": "Executive"
+        },
+        "imageNames": [
+            "office_chair_leather_1770273258315.png"
+        ]
+    },
+    {
+        "name": "Conference Table",
+        "description": "Large conference table with cable management.",
+        "sku": "OFF-DSK-06",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "Polished Mahogany",
+            "Seats": "12",
+            "Length": "300cm"
+        },
+        "imageNames": [
+            "accent_chair_teal_1770700014006.png"
+        ]
+    },
+    {
+        "name": "Under-desk Footrest",
+        "description": "Ergonomic footrest with adjustable tilt.",
+        "sku": "OFF-ACC-07",
+        "familyId": "6176f04b-2063-478d-83b3-e216e719535e",
+        "attributes": {
+            "Material": "High-density Foam",
+            "Features": "Non-slip surface"
+        },
+        "imageNames": [
+            "led_desk_lamp_1770700029530.png"
+        ]
+    },
+    {
+        "name": "Velvet 3-Seater Sofa",
+        "description": "Luxurious navy blue velvet sofa.",
+        "sku": "HOM-SFA-08",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Color": "Navy Blue",
+            "Fabric": "Velvet",
+            "Capacity": "3-Seater"
+        },
+        "imageNames": [
+            "sofa_3_seater_velvet_v2_1770699476061.png"
+        ]
+    },
+    {
+        "name": "Walnut Dining Table",
+        "description": "Rectangular dining table in rich walnut wood.",
+        "sku": "HOM-TBL-09",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Material": "Walnut Wood",
+            "Seats": "6",
+            "Shape": "Rectangular"
+        },
+        "imageNames": [
+            "dining_table_walnut_v2_1770699494432.png"
+        ]
+    },
+    {
+        "name": "Minimalist White Wardrobe",
+        "description": "2-door wardrobe with shelving and hanging rod.",
+        "sku": "HOM-WRD-10",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Color": "White",
+            "Style": "Minimalist",
+            "Doors": "2"
+        },
+        "imageNames": [
+            "wardrobe_white_minimalist_1770699631608.png"
+        ]
+    },
+    {
+        "name": "Solid Wood Bed Frame",
+        "description": "Durable king-size bed frame made from acacia.",
+        "sku": "HOM-BED-11",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Material": "Acacia Wood",
+            "Size": "King"
+        },
+        "imageNames": [
+            "oak_bookshelf_1770700043596.png"
+        ]
+    },
+    {
+        "name": "Marble Coffee Table",
+        "description": "Round coffee table with white marble top.",
+        "sku": "HOM-COF-12",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Material": "Marble",
+            "Base": "Gold-finished Steel"
+        },
+        "imageNames": [
+            "coffee_table_marble_v2_1770699618045.png"
+        ]
+    },
+    {
+        "name": "Fabric Ottoman",
+        "description": "Round gray fabric ottoman for extra seating.",
+        "sku": "HOM-OTM-13",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Material": "Polyester Blend",
+            "Color": "Gray"
+        },
+        "imageNames": [
+            "coffee_table_marble_v2_1770699511738.png"
+        ]
+    },
+    {
+        "name": "Full-length Mirror",
+        "description": "Floor-standing beveled mirror with oak frame.",
+        "sku": "HOM-MIR-14",
+        "familyId": "caf4305c-7faf-4a6c-88a2-ae4fac524541",
+        "attributes": {
+            "Type": "Floor-standing",
+            "Frame": "Solid Oak"
+        },
+        "imageNames": [
+            "bookshelf_modern_white_1770699563370.png"
+        ]
+    },
+    {
+        "name": "Satin Nickel Door Handle",
+        "description": "Premium lever handle set for interior doors.",
+        "sku": "HRD-HDL-15",
+        "familyId": "4b2d50ca-e7bb-49ce-a20a-d122432167f2",
+        "attributes": {
+            "Finish": "Satin Nickel",
+            "Type": "Lever"
+        },
+        "imageNames": [
+            "tv_unit_minimal_oak_1770699577493.png"
+        ]
+    },
+    {
+        "name": "Self-Closing Cabinet Hinge",
+        "description": "Concealed hinge with self-closing mechanism.",
+        "sku": "HRD-HNG-16",
+        "familyId": "4b2d50ca-e7bb-49ce-a20a-d122432167f2",
+        "attributes": {
+            "Type": "Concealed",
+            "Pack Size": "Pair"
+        },
+        "imageNames": [
+            "coffee_table_glass_1770699546921.png"
+        ]
+    },
+    {
+        "name": "Brushed Brass Drawer Knob",
+        "description": "Round minimalist knob for cabinetry.",
+        "sku": "HRD-KNB-17",
+        "familyId": "4b2d50ca-e7bb-49ce-a20a-d122432167f2",
+        "attributes": {
+            "Material": "Brass",
+            "Finish": "Brushed"
+        },
+        "imageNames": [
+            "bookshelf_industrial_1770699602705.png"
+        ]
+    },
+    {
+        "name": "Heavy-duty Drawer Slide",
+        "description": "Soft-close ball-bearing drawer slides.",
+        "sku": "HRD-SLD-18",
+        "familyId": "4b2d50ca-e7bb-49ce-a20a-d122432167f2",
+        "attributes": {
+            "Type": "Soft-close",
+            "Load Capacity": "45kg"
+        },
+        "imageNames": [
+            "wardrobe_white_minimalist_1770699631608.png"
+        ]
+    },
+    {
+        "name": "Magnetic Door Latch",
+        "description": "Slim magnetic catch for cabinet doors.",
+        "sku": "HRD-LTH-19",
+        "familyId": "4b2d50ca-e7bb-49ce-a20a-d122432167f2",
+        "attributes": {
+            "Type": "Magnetic",
+            "Force": "5kg"
+        },
+        "imageNames": [
+            "coffee_table_marble_v2_1770699618045.png"
+        ]
+    }
+]

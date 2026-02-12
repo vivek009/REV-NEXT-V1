@@ -1,6 +1,5 @@
 package com.revnext.configuration;
 
-
 import com.revnext.configuration.security.ApplicationUser;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +21,14 @@ public class JpaConfig {
 
     public static class AuditorAwareImpl implements AuditorAware<UUID> {
         @NotNull
+        private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
         @Override
         public Optional<UUID> getCurrentAuditor() {
-            return Optional.of(((ApplicationUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
+            return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                    .filter(auth -> auth.isAuthenticated() && auth.getPrincipal() instanceof ApplicationUser)
+                    .map(auth -> ((ApplicationUser) auth.getPrincipal()).getId())
+                    .or(() -> Optional.of(SYSTEM_USER_ID));
         }
     }
 }

@@ -8,15 +8,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import jakarta.persistence.GenerationType;
 
-@Entity(name = "IMAGE")
+@Entity
+@Table(name = "IMAGE")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
@@ -27,6 +30,9 @@ public class Image extends BaseData {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(name = "name")
+    private String name;
 
     // Where the image is stored (local, S3, CDN, etc.)
     @Column(name = "uri", nullable = false)
@@ -48,7 +54,9 @@ public class Image extends BaseData {
     @Column(name = "version")
     private Integer version;
 
-    // Which product this image belongs to
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

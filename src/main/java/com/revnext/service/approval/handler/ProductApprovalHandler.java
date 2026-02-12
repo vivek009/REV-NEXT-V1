@@ -1,19 +1,17 @@
 package com.revnext.service.approval.handler;
 
 import com.revnext.domain.approval.ApprovalStatus;
-import com.revnext.domain.catalog.Product;
-import com.revnext.repository.catalog.ProductRepository;
 import com.revnext.service.approval.ApprovalActionHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProductApprovalHandler implements ApprovalActionHandler {
-
-    private final ProductRepository productRepository;
 
     @Override
     public String getEntityType() {
@@ -22,9 +20,8 @@ public class ProductApprovalHandler implements ApprovalActionHandler {
 
     @Override
     public void handleApproval(UUID entityId, ApprovalStatus finalStatus) {
-        Product product = productRepository.findById(entityId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        product.setApprovalStatus(finalStatus);
-        productRepository.save(product);
+        log.info("Finalizing approval for PRODUCT with ID {} to status {}", entityId, finalStatus);
+        // Central status is already updated by ApprovalService.
+        // Side effects like cache eviction or notifications can be added here.
     }
 }

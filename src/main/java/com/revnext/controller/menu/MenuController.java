@@ -41,7 +41,12 @@ public class MenuController extends BaseController {
     private MenuRequestMapper requestMapper;
 
     @GetMapping
-    public ResponseEntity<List<MenuResponse>> getMenuForRole(@RequestAttribute(name = "Roles") Roles roleName) {
+    public ResponseEntity<List<MenuResponse>> getMenuForRole(
+            @RequestAttribute(name = "Roles", required = false) Roles roleName) {
+        if (roleName == null) {
+            // No role in token — return empty list or all root menus
+            return getResponse(List::of);
+        }
         // Get entity list from service
         List<Menu> menus = menuService.getMenuByRole(roleName);
 
@@ -72,20 +77,22 @@ public class MenuController extends BaseController {
     @PutMapping(path = "/menu")
     public ResponseEntity<String> updateMenu(@RequestBody UpdateMenuRequest updateMenuRequest) {
         return getResponse(() -> {
-            menuService.updateMenu(requestMapper.toMenu(updateMenuRequest.getMenuRequest()), updateMenuRequest.getMenuId());
+            menuService.updateMenu(requestMapper.toMenu(updateMenuRequest.getMenuRequest()),
+                    updateMenuRequest.getMenuId());
             return "Menu updated successfully";
         });
     }
 
-
     @PutMapping(path = "/childMenu")
     public ResponseEntity<Boolean> addChildMenu(@RequestBody ChildOpRequest childOpRequest) {
-        return getResponse(() -> menuService.addChildren(childOpRequest.getParentId(), childOpRequest.getChildrenIds()));
+        return getResponse(
+                () -> menuService.addChildren(childOpRequest.getParentId(), childOpRequest.getChildrenIds()));
     }
 
     @DeleteMapping(path = "/childMenu")
     public ResponseEntity<Boolean> removeChildMenu(@RequestBody ChildOpRequest childOpRequest) {
-        return getResponse(() -> menuService.removeChildren(childOpRequest.getParentId(), childOpRequest.getChildrenIds()));
+        return getResponse(
+                () -> menuService.removeChildren(childOpRequest.getParentId(), childOpRequest.getChildrenIds()));
     }
 
     @PostMapping("/menu/{menuId}/{role}")
@@ -103,6 +110,5 @@ public class MenuController extends BaseController {
             return "Role removed successfully";
         });
     }
-
 
 }

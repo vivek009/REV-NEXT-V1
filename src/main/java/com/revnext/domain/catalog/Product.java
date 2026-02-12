@@ -2,12 +2,9 @@ package com.revnext.domain.catalog;
 
 import com.revnext.domain.BaseData;
 import com.revnext.domain.approval.Approvable;
-import com.revnext.domain.approval.ApprovalStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +21,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Entity(name = "PRODUCT")
+@Entity
+@Table(name = "PRODUCT")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
@@ -37,11 +37,6 @@ public class Product extends BaseData implements Approvable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private ApprovalStatus approvalStatus = ApprovalStatus.DRAFT;
-
     @Override
     public UUID getEntityId() {
         return this.id;
@@ -50,11 +45,6 @@ public class Product extends BaseData implements Approvable {
     @Override
     public String getEntityType() {
         return "PRODUCT";
-    }
-
-    @Override
-    public void setApprovalStatus(ApprovalStatus status) {
-        this.approvalStatus = status;
     }
 
     @Column(name = "name", nullable = false)
@@ -66,6 +56,9 @@ public class Product extends BaseData implements Approvable {
     @Column(name = "sku")
     private String sku;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "product_family_id")
     private ProductFamily productFamily;

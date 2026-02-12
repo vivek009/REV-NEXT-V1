@@ -11,6 +11,7 @@ import com.revnext.domain.user.User;
 import com.revnext.repository.user.UserRoleRepository;
 import com.revnext.service.user.UserService;
 import com.revnext.service.user.exception.UserNotAuthorizedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +46,16 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping(value = URLConstants.REGISTRATION, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registration(@RequestBody RegistrationRequest registrationRequest)
             throws UserNotAuthorizedException {
         return getResponse(() -> {
             User user = new User();
             user.setUserName(registrationRequest.getUsername());
-            user.setPassword("Admin@123");
+            user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             user.setEmail(registrationRequest.getEmail());
             user.setMobileNumber(registrationRequest.getMobileNumber());
             user.setRefreshToken(UUID.randomUUID().toString());

@@ -24,7 +24,7 @@ INSERT INTO user (
     NOW(6),               -- updated_at (current timestamp with microseconds)
     UUID_TO_BIN(UUID()),  -- updated_by (replace with actual updater ID)
     'pawan31031',         -- user_name
-    'Bina_31031',         -- password (consider hashing it)
+    '<password_placeholder>',         -- password (consider hashing it)
     '9725005359',         -- mobile_number
     'pawan31031@gmail.com', -- email
     b'1',                 -- status (b'1' for TRUE in BIT(1) column)

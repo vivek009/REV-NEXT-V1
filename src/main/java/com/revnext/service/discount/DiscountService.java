@@ -1,9 +1,12 @@
 package com.revnext.service.discount;
 
+import com.revnext.domain.approval.ApprovalStatus;
+import com.revnext.domain.approval.EntityStatus;
 import com.revnext.domain.discount.CustomerDiscount;
 import com.revnext.domain.discount.CustomerSegmentDiscount;
 import com.revnext.domain.discount.Discount;
 import com.revnext.domain.discount.SuiteDiscount;
+import com.revnext.repository.approval.EntityStatusRepository;
 import com.revnext.repository.customer.CustomerRepository;
 import com.revnext.repository.customer.CustomerSegmentRepository;
 import com.revnext.repository.catalog.ProductRepository;
@@ -28,6 +31,14 @@ import java.util.UUID;
 public class DiscountService extends BaseService {
 
     private final DiscountRepository discountRepository;
+    private final EntityStatusRepository entityStatusRepository;
+
+    public ApprovalStatus getApprovalStatus(UUID entityId) {
+        return entityStatusRepository.findByEntityIdAndEntityType(entityId, "DISCOUNT")
+                .map(EntityStatus::getStatus)
+                .orElse(ApprovalStatus.DRAFT);
+    }
+
     private final CustomerDiscountRepository customerDiscountRepository;
     private final CustomerSegmentDiscountRepository segmentDiscountRepository;
     private final SuiteDiscountRepository suiteDiscountRepository;

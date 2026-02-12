@@ -2,18 +2,17 @@ package com.revnext.service.approval.handler;
 
 import com.revnext.domain.approval.ApprovalStatus;
 import com.revnext.domain.discount.Discount;
-import com.revnext.repository.discount.DiscountRepository;
 import com.revnext.service.approval.ApprovalActionHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DiscountApprovalHandler implements ApprovalActionHandler {
-
-    private final DiscountRepository discountRepository;
 
     @Override
     public String getEntityType() {
@@ -22,9 +21,7 @@ public class DiscountApprovalHandler implements ApprovalActionHandler {
 
     @Override
     public void handleApproval(UUID entityId, ApprovalStatus finalStatus) {
-        Discount discount = discountRepository.findById(entityId)
-                .orElseThrow(() -> new IllegalArgumentException("Discount not found"));
-        discount.setApprovalStatus(finalStatus);
-        discountRepository.save(discount);
+        log.info("Finalizing approval for DISCOUNT with ID {} to status {}", entityId, finalStatus);
+        // Central status is already updated by ApprovalService.
     }
 }

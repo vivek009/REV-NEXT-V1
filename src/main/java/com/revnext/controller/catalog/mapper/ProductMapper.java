@@ -2,9 +2,13 @@ package com.revnext.controller.catalog.mapper;
 
 import com.revnext.controller.catalog.request.ProductRequest;
 import com.revnext.controller.catalog.response.ProductResponse;
+import com.revnext.domain.approval.ApprovalStatus;
+import com.revnext.domain.catalog.Image;
 import com.revnext.domain.catalog.Product;
 import com.revnext.domain.catalog.ProductAttribute;
+import com.revnext.domain.catalog.ProductFamily;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,6 +20,8 @@ public class ProductMapper {
                 .name(request.getName())
                 .description(request.getDescription())
                 .sku(request.getSku())
+                .productFamily(request.getFamilyId() != null ? ProductFamily.builder().id(request.getFamilyId()).build()
+                        : null)
                 .build();
 
         if (request.getAttributes() != null) {
@@ -28,13 +34,28 @@ public class ProductMapper {
                     .collect(Collectors.toList()));
         }
 
+        if (request.getImageNames() != null) {
+            product.setImages(request.getImageNames().stream()
+                    .map(name -> Image.builder()
+                            .name(name)
+                            .uri("/images/" + name)
+                            .product(product)
+                            .build())
+                    .collect(Collectors.toCollection(java.util.ArrayList::new)));
+        }
+
         return product;
     }
 
-    public static ProductResponse toResponse(Product product) {
+    public static ProductResponse toResponse(Product product, ApprovalStatus status) {
         Map<String, String> attributes = new HashMap<>();
         if (product.getAttributes() != null) {
             product.getAttributes().forEach(attr -> attributes.put(attr.getKey(), attr.getValue()));
+        }
+
+        java.util.List<String> imageNames = new java.util.ArrayList<>();
+        if (product.getImages() != null) {
+            product.getImages().forEach(img -> imageNames.add(img.getName()));
         }
 
         return ProductResponse.builder()
@@ -42,7 +63,8 @@ public class ProductMapper {
                 .name(product.getName())
                 .description(product.getDescription())
                 .sku(product.getSku())
-                .approvalStatus(product.getApprovalStatus())
+                .approvalStatus(status)
+                .imageNames(imageNames)
                 .attributes(attributes)
                 .build();
     }

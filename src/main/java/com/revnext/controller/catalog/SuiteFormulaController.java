@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/formulas")
+@RequestMapping("/api/suite-formulas")
 @RequiredArgsConstructor
 public class SuiteFormulaController {
 
@@ -42,8 +42,7 @@ public class SuiteFormulaController {
         return ResponseEntity.ok(
                 service.findAll().stream()
                         .map(SuiteFormulaMapper::toResponse)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
@@ -54,7 +53,7 @@ public class SuiteFormulaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SuiteFormulaResponse> update(@PathVariable UUID id,
-                                                       @RequestBody SuiteFormulaRequest request) {
+            @RequestBody SuiteFormulaRequest request) {
         log.info("API: Updating SuiteFormula id={}", id);
         SuiteFormula updatedFormula = SuiteFormulaMapper.toEntity(request);
         SuiteFormula saved = service.update(id, updatedFormula);
@@ -68,4 +67,3 @@ public class SuiteFormulaController {
         return ResponseEntity.noContent().build();
     }
 }
-

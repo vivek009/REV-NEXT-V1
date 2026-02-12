@@ -24,11 +24,14 @@ public enum Roles {
     private final int level;
 
     public static Roles fromValue(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
         for (Roles role : Roles.values()) {
-            if (role.value.equalsIgnoreCase(value)) {
+            if (role.name().equalsIgnoreCase(value) || role.value.equalsIgnoreCase(value)) {
                 return role;
             }
         }
-        throw new IllegalArgumentException("Invalid Role value: " + value);
+        return null;
     }
 }

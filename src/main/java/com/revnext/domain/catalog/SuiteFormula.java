@@ -2,12 +2,8 @@ package com.revnext.domain.catalog;
 
 import com.revnext.domain.BaseData;
 import com.revnext.domain.approval.Approvable;
-import com.revnext.domain.approval.ApprovalStatus;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,11 +15,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
@@ -33,10 +32,6 @@ public class SuiteFormula extends BaseData implements Approvable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private ApprovalStatus approvalStatus = ApprovalStatus.DRAFT;
 
     @Override
     public UUID getEntityId() {
@@ -48,19 +43,18 @@ public class SuiteFormula extends BaseData implements Approvable {
         return "SUITE_FORMULA";
     }
 
-    @Override
-    public void setApprovalStatus(ApprovalStatus status) {
-        this.approvalStatus = status;
-    }
-
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "formula", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Suite> suites;
+    private List<Suite> suites = new ArrayList<>();
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "formula", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ingredient> ingredients;
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "family_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "family_id", nullable = false)
     private ProductFamily family;
 
     public void addIngredient(Ingredient ingredient) {

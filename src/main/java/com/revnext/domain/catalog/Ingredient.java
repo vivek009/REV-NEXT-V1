@@ -36,7 +36,7 @@ public class Ingredient extends BaseData {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "raw_material", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "raw_material", nullable = false)
     private Product product;
 
     @Column(nullable = false, precision = 19, scale = 4)

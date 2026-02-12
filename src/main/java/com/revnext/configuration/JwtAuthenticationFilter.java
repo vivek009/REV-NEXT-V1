@@ -71,8 +71,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 request.setAttribute(JWTConstants.USER_ID.getValue(), UUID.fromString(userId));
             }
 
-            if (role != null) {
-                request.setAttribute(JWTConstants.ROLES.getValue(), Roles.fromValue(role));
+            if (StringUtils.isNotEmpty(role)) {
+                try {
+                    request.setAttribute(JWTConstants.ROLES.getValue(), Roles.fromValue(role));
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Unknown role: " + role);
+                }
             }
             if (divisionName != null) {
                 request.setAttribute(JWTConstants.DIVISION_NAME.getValue(), divisionName);

@@ -2,16 +2,14 @@ package com.revnext.domain.discount;
 
 import com.revnext.domain.BaseData;
 import com.revnext.domain.approval.Approvable;
-import com.revnext.domain.approval.ApprovalStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -20,7 +18,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-@Entity(name = "DISCOUNT")
+@Entity
+@Table(name = "DISCOUNT")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
@@ -32,11 +31,6 @@ public class Discount extends BaseData implements Approvable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    @Builder.Default
-    private ApprovalStatus approvalStatus = ApprovalStatus.DRAFT;
-
     @Override
     public UUID getEntityId() {
         return this.id;
@@ -45,11 +39,6 @@ public class Discount extends BaseData implements Approvable {
     @Override
     public String getEntityType() {
         return "DISCOUNT";
-    }
-
-    @Override
-    public void setApprovalStatus(ApprovalStatus status) {
-        this.approvalStatus = status;
     }
 
     @Column(name = "name", nullable = false)

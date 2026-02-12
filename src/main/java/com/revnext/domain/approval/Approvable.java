@@ -6,6 +6,4 @@ public interface Approvable {
     UUID getEntityId();
 
     String getEntityType();
-
-    void setApprovalStatus(ApprovalStatus status);
 }

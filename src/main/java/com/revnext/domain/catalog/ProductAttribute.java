@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import jakarta.persistence.GenerationType;
 
 import java.util.UUID;
@@ -35,6 +36,9 @@ public class ProductAttribute extends BaseData {
     @Column(name = "attr_value", nullable = false)
     private String value;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

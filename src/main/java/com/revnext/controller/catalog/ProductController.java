@@ -4,19 +4,19 @@ import com.revnext.controller.BaseController;
 import com.revnext.controller.catalog.mapper.ProductMapper;
 import com.revnext.controller.catalog.request.ProductRequest;
 import com.revnext.controller.catalog.response.ProductResponse;
+import com.revnext.domain.approval.ApprovalStatus;
 import com.revnext.domain.catalog.Product;
+import com.revnext.repository.catalog.ProductRepository;
 import com.revnext.service.catalog.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Validated
 @RestController
 @RequestMapping("/api/products")
 @Slf4j
@@ -24,24 +24,27 @@ import java.util.stream.Collectors;
 public class ProductController extends BaseController {
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        log.info("Received request to create product: {}", request.getName());
         return getResponse(() -> {
             Product product = ProductMapper.toEntity(request);
             Product saved = productService.createProduct(product);
-            return ProductMapper.toResponse(saved);
+            return ProductMapper.toResponse(saved, productService.getApprovalStatus(saved.getId()));
         });
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        log.info("Received request to fetch all products");
+    public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam(required = false) ApprovalStatus status) {
+        log.info("Received request to fetch products with status: {}", status);
         return getResponse(() -> {
-            List<Product> products = productService.getAllProducts();
+            List<Product> products = (status != null)
+                    ? productRepository.findByApprovalStatus(status)
+                    : productService.getAllProducts();
             return products.stream()
-                    .map(ProductMapper::toResponse)
+                    .map(p -> ProductMapper.toResponse(p,
+                            status != null ? status : productService.getApprovalStatus(p.getId())))
                     .collect(Collectors.toList());
         });
     }
@@ -51,26 +54,24 @@ public class ProductController extends BaseController {
         log.info("Received request to fetch product: {}", id);
         return getResponse(() -> {
             Product product = productService.getProductById(id);
-            return ProductMapper.toResponse(product);
+            return ProductMapper.toResponse(product, productService.getApprovalStatus(product.getId()));
         });
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID id, @RequestBody ProductRequest request) {
-        log.info("Received request to update product: {}", id);
         return getResponse(() -> {
             Product product = ProductMapper.toEntity(request);
             Product updated = productService.updateProduct(id, product);
-            return ProductMapper.toResponse(updated);
+            return ProductMapper.toResponse(updated, productService.getApprovalStatus(updated.getId()));
         });
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable UUID id) {
-        log.info("Received request to delete product: {}", id);
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         return getResponse(() -> {
             productService.deleteProduct(id);
-            return "Product deleted successfully";
+            return null;
         });
     }
 }

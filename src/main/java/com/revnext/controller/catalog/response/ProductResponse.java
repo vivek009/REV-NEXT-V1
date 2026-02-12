@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,5 +19,6 @@ public class ProductResponse {
     private String description;
     private String sku;
     private ApprovalStatus approvalStatus;
+    private List<String> imageNames;
     private Map<String, String> attributes;
 }

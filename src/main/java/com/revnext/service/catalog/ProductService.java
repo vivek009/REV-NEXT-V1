@@ -1,6 +1,9 @@
 package com.revnext.service.catalog;
 
+import com.revnext.domain.approval.ApprovalStatus;
+import com.revnext.domain.approval.EntityStatus;
 import com.revnext.domain.catalog.Product;
+import com.revnext.repository.approval.EntityStatusRepository;
 import com.revnext.repository.catalog.ProductRepository;
 import com.revnext.service.BaseService;
 import com.revnext.exception.ResourceNotFoundException;
@@ -18,6 +21,13 @@ import java.util.UUID;
 public class ProductService extends BaseService {
 
     private final ProductRepository productRepository;
+    private final EntityStatusRepository entityStatusRepository;
+
+    public ApprovalStatus getApprovalStatus(UUID entityId) {
+        return entityStatusRepository.findByEntityIdAndEntityType(entityId, "PRODUCT")
+                .map(EntityStatus::getStatus)
+                .orElse(ApprovalStatus.DRAFT);
+    }
 
     @Transactional
     public Product createProduct(Product product) {

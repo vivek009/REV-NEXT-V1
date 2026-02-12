@@ -57,9 +57,12 @@ public class LoginController extends BaseController {
         @PostMapping(value = URLConstants.AUTHENTICATE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<LoginResponse> authenticate(HttpServletRequest request,
                         @RequestBody LoginRequest loginRequest) throws UserNotAuthorizedException {
-                User user = userService.getUserForLogin(loginRequest.getUserName(), loginRequest.getPassword());
+                User user = userService.findByUsername(loginRequest.getUserName())
+                                .orElseThrow(() -> new UserNotAuthorizedException("Invalid username or password"));
+
                 Authentication authentication = authenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(user.getUserId(), user.getPassword()));
+                                new UsernamePasswordAuthenticationToken(user.getUserId().toString(),
+                                                loginRequest.getPassword()));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtService
                                 .createCustomToken(
