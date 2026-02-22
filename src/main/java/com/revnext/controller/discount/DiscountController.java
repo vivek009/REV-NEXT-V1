@@ -10,6 +10,9 @@ import com.revnext.repository.discount.DiscountRepository;
 import com.revnext.service.discount.DiscountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,16 +44,27 @@ public class DiscountController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DiscountResponse>> getAllDiscounts(
-            @RequestParam(required = false) ApprovalStatus status) {
+    public ResponseEntity<Page<DiscountResponse>> getAllDiscounts(
+            @RequestParam(required = false) ApprovalStatus status,
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        log.info("Fetching discounts status={}, q={}, page={}, size={}", status, q, page, size);
+        Pageable pageable = PageRequest.of(page, size);
         return getResponse(() -> {
-            List<Discount> discounts = (status != null)
-                    ? discountRepository.findByApprovalStatus(status)
-                    : discountService.getAllDiscounts();
-            return discounts.stream()
-                    .map(d -> DiscountMapper.toResponse(d,
-                            status != null ? status : discountService.getApprovalStatus(d.getId())))
-                    .collect(Collectors.toList());
+            if (q != null && !q.isBlank()) {
+                return discountRepository.searchByText(q.trim(), pageable)
+                        .map(d -> DiscountMapper.toResponse(d, discountService.getApprovalStatus(d.getId())));
+            }
+            if (status != null) {
+                List<Discount> discounts = discountRepository.findByApprovalStatus(status);
+                return new org.springframework.data.domain.PageImpl<>(
+                        discounts.stream()
+                                .map(d -> DiscountMapper.toResponse(d, status))
+                                .collect(Collectors.toList()));
+            }
+            return discountRepository.findAll(pageable)
+                    .map(d -> DiscountMapper.toResponse(d, discountService.getApprovalStatus(d.getId())));
         });
     }
 

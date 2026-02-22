@@ -12,6 +12,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,16 +36,28 @@ public class SuiteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SuiteResponse>> findAll(@RequestParam(required = false) ApprovalStatus status) {
-        log.info("API: Fetching all Suites with status={}", status);
-        List<Suite> suites = (status != null)
-                ? suiteRepository.findByApprovalStatus(status)
-                : suiteService.getAllSuites();
+    public ResponseEntity<Page<SuiteResponse>> findAll(
+            @RequestParam(required = false) ApprovalStatus status,
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        log.info("API: Fetching all Suites with status={}, q={}, page={}, size={}", status, q, page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        if (q != null && !q.isBlank()) {
+            Page<SuiteResponse> results = suiteRepository.searchByText(q.trim(), pageable)
+                    .map(s -> SuiteMapper.toResponse(s, suiteService.getApprovalStatus(s.getId())));
+            return ResponseEntity.ok(results);
+        }
+        if (status != null) {
+            List<Suite> suites = suiteRepository.findByApprovalStatus(status);
+            return ResponseEntity.ok(new org.springframework.data.domain.PageImpl<>(
+                    suites.stream()
+                            .map(s -> SuiteMapper.toResponse(s, status))
+                            .collect(Collectors.toList())));
+        }
         return ResponseEntity.ok(
-                suites.stream()
-                        .map(s -> SuiteMapper.toResponse(s,
-                                status != null ? status : suiteService.getApprovalStatus(s.getId())))
-                        .collect(Collectors.toList()));
+                suiteRepository.findAll(pageable)
+                        .map(s -> SuiteMapper.toResponse(s, suiteService.getApprovalStatus(s.getId()))));
     }
 
     @GetMapping("/{id}")
@@ -51,10 +66,6 @@ public class SuiteController {
         Suite suite = suiteService.getSuiteById(id);
         return ResponseEntity.ok(SuiteMapper.toResponse(suite, suiteService.getApprovalStatus(suite.getId())));
     }
-
-    // Fixed method call to use toResponse instead of ok if I changed it in my mind,
-    // but SuiteMapper.toResponse is correct.
-    // Wait, let me use the correct mapper method.
 
     @PutMapping("/{id}")
     public ResponseEntity<SuiteResponse> update(@PathVariable UUID id,

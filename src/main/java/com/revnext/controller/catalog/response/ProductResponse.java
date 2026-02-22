@@ -18,6 +18,9 @@ public class ProductResponse {
     private String name;
     private String description;
     private String sku;
+    private UUID familyId;
+    private String familyName;
+    private String imageUrl;
     private ApprovalStatus approvalStatus;
     private List<String> imageNames;
     private Map<String, String> attributes;

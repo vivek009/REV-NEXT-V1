@@ -29,6 +29,14 @@ public class ProductService extends BaseService {
                 .orElse(ApprovalStatus.DRAFT);
     }
 
+    public java.util.Map<UUID, ApprovalStatus> getApprovalStatuses(java.util.Collection<UUID> entityIds) {
+        if (entityIds == null || entityIds.isEmpty())
+            return java.util.Collections.emptyMap();
+        return entityStatusRepository.findByEntityIdInAndEntityType(entityIds, "PRODUCT")
+                .stream()
+                .collect(java.util.stream.Collectors.toMap(EntityStatus::getEntityId, EntityStatus::getStatus));
+    }
+
     @Transactional
     public Product createProduct(Product product) {
         log.info("Creating new product: {}", product.getName());
@@ -54,6 +62,7 @@ public class ProductService extends BaseService {
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setDescription(updatedProduct.getDescription());
         existingProduct.setSku(updatedProduct.getSku());
+        existingProduct.setProductFamily(updatedProduct.getProductFamily());
 
         // Update attributes: Clear and re-add for simplicity in this implementation
         if (updatedProduct.getAttributes() != null) {

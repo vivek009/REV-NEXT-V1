@@ -10,10 +10,14 @@ import com.revnext.repository.catalog.ProductRepository;
 import com.revnext.service.catalog.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,16 +40,32 @@ public class ProductController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam(required = false) ApprovalStatus status) {
-        log.info("Received request to fetch products with status: {}", status);
+    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+            @RequestParam(required = false) ApprovalStatus status,
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        log.info("Received request to fetch products with status: {}, q: {}, page: {}, size: {}", status, q, page,
+                size);
+        Pageable pageable = PageRequest.of(page, size);
         return getResponse(() -> {
-            List<Product> products = (status != null)
-                    ? productRepository.findByApprovalStatus(status)
-                    : productService.getAllProducts();
-            return products.stream()
-                    .map(p -> ProductMapper.toResponse(p,
-                            status != null ? status : productService.getApprovalStatus(p.getId())))
-                    .collect(Collectors.toList());
+            Page<Product> productPage;
+            if (q != null && !q.isBlank()) {
+                productPage = productRepository.searchByText(q.trim(), pageable);
+            } else if (status != null) {
+                List<Product> products = productRepository.findByApprovalStatus(status);
+                return new org.springframework.data.domain.PageImpl<>(
+                        products.stream()
+                                .map(p -> ProductMapper.toResponse(p, status))
+                                .collect(Collectors.toList()));
+            } else {
+                productPage = productRepository.findAll(pageable);
+            }
+            // Batch-load approval statuses in a single query
+            Map<UUID, ApprovalStatus> statusMap = productService.getApprovalStatuses(
+                    productPage.getContent().stream().map(Product::getId).collect(Collectors.toList()));
+            return productPage.map(p -> ProductMapper.toResponse(p,
+                    statusMap.getOrDefault(p.getId(), ApprovalStatus.DRAFT)));
         });
     }
 

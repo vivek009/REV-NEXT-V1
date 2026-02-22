@@ -58,11 +58,19 @@ public class ProductMapper {
             product.getImages().forEach(img -> imageNames.add(img.getName()));
         }
 
+        String imageUrl = null;
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            imageUrl = product.getImages().get(0).getUri();
+        }
+
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .sku(product.getSku())
+                .familyId(product.getProductFamily() != null ? product.getProductFamily().getId() : null)
+                .familyName(product.getProductFamily() != null ? product.getProductFamily().getName() : null)
+                .imageUrl(imageUrl)
                 .approvalStatus(status)
                 .imageNames(imageNames)
                 .attributes(attributes)

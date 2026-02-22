@@ -17,7 +17,5 @@ public class LoginResponse {
     private String mobileNumber;
     private String profilePictureUrl;
     private String divisionName;
-    private String circleName;
     private String shopName;
-    private String workshopName;
 }

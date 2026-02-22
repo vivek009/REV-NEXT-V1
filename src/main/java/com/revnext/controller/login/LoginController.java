@@ -91,9 +91,7 @@ public class LoginController extends BaseController {
                                 .mobileNumber(user.getMobileNumber())
                                 .profilePictureUrl(user.getProfilePictureUrl())
                                 .roles(user.getRoles().stream()
-                                                .map(role -> role.getName().getValue()) // or .map(role ->
-                                                                                        // role.getName()) if Role has a
-                                                                                        // getName() method
+                                                .map(role -> role.getName().getValue())
                                                 .collect(Collectors.toSet()))
                                 .divisionName(user.getDivisionName())
                                 .shopName(user.getShopName())
@@ -111,9 +109,9 @@ public class LoginController extends BaseController {
                                                 Map.of(
                                                                 JWTConstants.USER_ID.getValue(),
                                                                 user.getUserId().toString(),
-                                                                JWTConstants.CLIENT_IP.getValue(),
                                                                 JWTConstants.ROLES.getValue(),
-                                                                user.getRolesAsString(),
+                                                                user.getRolesAsValue(),
+                                                                JWTConstants.CLIENT_IP.getValue(),
                                                                 HttpUtils.getClientIPs(request),
                                                                 JWTConstants.IAT.getValue(),
                                                                 DateAndTimeUtil.addSecondsToInstant(0).getEpochSecond(),

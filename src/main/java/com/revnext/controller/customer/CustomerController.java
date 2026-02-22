@@ -9,9 +9,13 @@ import com.revnext.controller.customer.response.CustomerResponse;
 import com.revnext.controller.customer.response.CustomerSegmentResponse;
 import com.revnext.domain.customer.Customer;
 import com.revnext.domain.customer.CustomerSegment;
+import com.revnext.repository.customer.CustomerRepository;
 import com.revnext.service.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +30,7 @@ import java.util.stream.Collectors;
 public class CustomerController extends BaseController {
 
     private final CustomerService customerService;
+    private final CustomerRepository customerRepository;
 
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
@@ -37,11 +42,19 @@ public class CustomerController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
+    public ResponseEntity<Page<CustomerResponse>> getAllCustomers(
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        log.info("Fetching customers q={}, page={}, size={}", q, page, size);
+        Pageable pageable = PageRequest.of(page, size);
         return getResponse(() -> {
-            return customerService.getAllCustomers().stream()
-                    .map(CustomerMapper::toResponse)
-                    .collect(Collectors.toList());
+            if (q != null && !q.isBlank()) {
+                return customerRepository.searchByText(q.trim(), pageable)
+                        .map(CustomerMapper::toResponse);
+            }
+            return customerRepository.findAll(pageable)
+                    .map(CustomerMapper::toResponse);
         });
     }
 
